@@ -1,0 +1,42 @@
+.delete-modal{
+
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    justify-content: center;
+    align-items: center;
+    p{
+        font-size: 24px;
+    }
+
+    .btns{
+
+        display: flex;
+        gap: 20px;
+        width: 70%;
+
+
+
+        button{
+            
+            margin: 5px 0;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            
+            &:first-child{
+                color: white;
+                background-color: orangered
+            }
+
+            &:last-child{
+                color: white;
+                background-color: gray;
+
+            }
+        }
+    }
+}
