@@ -8,10 +8,14 @@ const Register = () => {
   const [firstName, setFirstname] = useState("");
   const [lastName, setLastname] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
+  const [formError, setFormError] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
   const postData = async () => {
+    setLoading(true);
     let response = await fetch("http://127.0.0.1:8000/api/reg", {
       method: "POST",
       headers: {
@@ -25,20 +29,62 @@ const Register = () => {
       }),
     });
 
-    let data = await response.json();
-
-    if (response.status == 403) {
-      alert("User already Exists");
-      return;
-    } else if (response.status == 200) {
+    if (response.ok) {
+      setLoading(false);
+      setError(false);
       navigate("/login");
     }
-    console.log(data);
+
+    setLoading(false);
+    setError(true);
   };
+
+  function validateUserInfo(userInfo) {
+    // Check if userInfo is an object
+    setLoading(true);
+    if (typeof userInfo !== "object" || userInfo === null) {
+      return false;
+    }
+
+    // Validate username, firstName, and lastName
+    if (
+      typeof userInfo.username !== "string" ||
+      userInfo.username.length < 3 ||
+      typeof userInfo.firstName !== "string" ||
+      userInfo.firstName.length < 3 ||
+      typeof userInfo.lastName !== "string" ||
+      userInfo.lastName.length < 3
+    ) {
+      setLoading(false);
+      return false;
+    }
+
+    // Validate password (basic validity)
+    if (
+      typeof userInfo.password !== "string" ||
+      userInfo.password.length < 8 // You can adjust the minimum length as needed
+    ) {
+      setLoading(false);
+      return false;
+    }
+
+    // You can add more advanced password validation logic if required
+
+    // If all checks pass, the userInfo object is considered valid
+    setLoading(false);
+    return true;
+  }
 
   const submitHandler = (e) => {
     e.preventDefault();
-    postData();
+    const userInfo = {
+      username,
+      firstName,
+      lastName,
+      password,
+    };
+    if (validateUserInfo(userInfo)) postData();
+    else setFormError(true);
   };
   return (
     <div className="register">
@@ -58,12 +104,15 @@ const Register = () => {
         </div>
         <div className="right">
           <h2>Login</h2>
+          {error && <h4>Username Exists</h4>}
+          {formError && <h4>Invalid Form Details </h4>}
           <form onSubmit={submitHandler}>
             <input
               type="text"
               placeholder="Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              className={error ? "error" : ""}
             />
             <input
               type="text"
@@ -84,7 +133,9 @@ const Register = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <button type="submit">Register</button>
+            <button type="submit">
+              {loading ? <p>Loading...</p> : <p>Register</p>}
+            </button>
           </form>
         </div>
       </div>

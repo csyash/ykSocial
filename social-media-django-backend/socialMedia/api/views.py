@@ -7,6 +7,7 @@ from .serializers import PostSerializer,ProfilePageSerializer,CustomUserSerializ
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.db.models import Q
 from rest_framework import status
+from django.shortcuts import render
 # Create your views here.
 """ 
 endpoints:
@@ -52,8 +53,8 @@ class MyTokenObtainPairView(TokenObtainPairView):
 
 @api_view(['GET'])
 def index(request):
-    context = ['hello','nolo']
-    return Response(context)
+    if request.method=='GET':
+        return Response(request,"response")
 
 @api_view(['GET','POST'])
 @permission_classes([IsAuthenticated])
@@ -199,7 +200,7 @@ def register_user(request):
         password = request.data.get("password")
         try:
             user = User.objects.get(username=username)
-            return Response("Username Exists")
+            return Response("Username Exists",status=403)
         except User.DoesNotExist:
             new_user = User.objects.create_user(username=username, first_name=first_name, last_name=last_name, password=password)
             new_user.save()

@@ -10,6 +10,8 @@ export const AuthProvider = ({ children }) => {
       : {}
   );
 
+  const [error, setError] = useState(false);
+
   let [authTokens, setAuthTokens] = useState(() =>
     localStorage.getItem("authTokens")
       ? JSON.parse(localStorage.getItem("authTokens"))
@@ -35,16 +37,18 @@ export const AuthProvider = ({ children }) => {
       setAuthTokens(data);
       setUser(jwtDecode(data.access));
       localStorage.setItem("authTokens", JSON.stringify(data));
+      setError(false);
       return;
     } else if (response.status === 401) {
-      alert("Wrong Credentials");
+      setError(true);
     } else {
-      alert("SOmething went wrong");
+      setError(true);
     }
   };
 
   let logoutUser = () => {
     setAuthTokens(null);
+    setError(false);
     localStorage.removeItem("authTokens");
     setUser({});
   };
@@ -60,10 +64,10 @@ export const AuthProvider = ({ children }) => {
 
     let data = await response.json();
     if (response.status === 200) {
-      console.log(data);
       setAuthTokens(data);
       setUser(jwtDecode(data.access));
       localStorage.setItem("authTokens", JSON.stringify(data));
+      setError(false);
     } else {
       logoutUser();
     }
@@ -95,6 +99,7 @@ export const AuthProvider = ({ children }) => {
         authTokens: authTokens,
         loginUser: loginUser,
         logoutUser: logoutUser,
+        error: error,
       }}
     >
       {loading ? null : children}

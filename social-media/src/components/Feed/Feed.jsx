@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "./Feed.scss";
-import Stories from "../Stories/Stories";
 import Post from "../Post/Post";
 import { useUserContext } from "../../providers/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -35,7 +34,6 @@ const Feed = () => {
   return (
     <div className="feed">
       <div className="container">
-        <Stories />
         <div className="posts">
           <div className="wrapper">
             {posts.map((post) => {

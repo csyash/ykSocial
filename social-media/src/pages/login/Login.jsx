@@ -7,19 +7,23 @@ import { useUserContext } from "../../providers/AuthContext";
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const { loginUser } = useUserContext();
+  const { loginUser, error } = useUserContext();
   const submitHandler = (e) => {
     e.preventDefault();
+    setLoading(true);
     const userInfo = {
       username: username,
       password: password,
     };
     loginUser(userInfo);
-    <Navigate to={"/"} />;
+    if (!error) {
+      setLoading(false);
+      return <Navigate to={"/"} />;
+    }
 
-    // setUsername("");
-    // setPassword("");
+    setLoading(false);
   };
   return (
     <div className="login">
@@ -39,20 +43,23 @@ const Login = () => {
         </div>
         <div className="right">
           <h2>Login</h2>
+          {error && <h4>Invalid Credentials</h4>}
           <form onSubmit={submitHandler}>
             <input
               type="text"
               placeholder="Username..."
               onChange={(e) => setUsername(e.target.value)}
               value={username}
+              className={error ? "error" : ""}
             />
             <input
               type="password"
               placeholder="Password"
               onChange={(e) => setPassword(e.target.value)}
+              className={error ? "error" : ""}
               value={password}
             />
-            <button type="submit">Login</button>
+            <button type="submit">{loading ? "Loading..." : "Login"}</button>
           </form>
         </div>
       </div>
